@@ -1,8 +1,7 @@
 from telegram import Update
 from telegram.ext import Application, ChatJoinRequestHandler, ContextTypes
 
-BOT_TOKEN = "8360228300: AAGWZj GV4v6JTeYcz72zFuxGOC
-st6VBVlpQ"
+BOT_TOKEN = "8360228300:AAGWZjGV4v6JTeYcz72zFuxGOCst6VBVlpQ"
 CHANNEL_ID = -1004485039141
 
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
