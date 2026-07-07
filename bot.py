@@ -39,7 +39,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "You'll receive all offers here."
     )
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  try:
+    try:
         await update.chat_join_request.approve()
 
         user = update.chat_join_request.from_user
@@ -68,7 +68,10 @@ Stay connected for daily updates, offers and rewards."""
 
     except Exception as e:
         print(e)
-        app = Application.builder().token(BOT_TOKEN).build()
+
+
+app = Application.builder().token(BOT_TOKEN).build()
+
 app.add_handler(CommandHandler("start", start))
 app.add_handler(ChatJoinRequestHandler(approve))
 
