@@ -6,14 +6,14 @@ CHANNEL_ID = -1004485039141
 
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        await context.bot.approve_chat_join_request(
-            chat_id=CHANNEL_ID,
-            user_id=update.chat_join_request.from_user.id
-        )
+        await update.chat_join_request.approve()
         print(f"Approved: {update.chat_join_request.from_user.id}")
     except Exception as e:
         print(e)
 
 app = Application.builder().token(BOT_TOKEN).build()
+
 app.add_handler(ChatJoinRequestHandler(approve))
-app.run_polling()
+
+print("Bot Started...")
+app.run_polling(allowed_updates=["chat_join_request"])
