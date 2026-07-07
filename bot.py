@@ -92,15 +92,15 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     broadcast_mode[user_id] = False
 
-    cursor.execute("SELECT user_id FROM users")
-    users = cursor.fetchall()
-print(users)  
+   cursor.execute("SELECT user_id FROM users")
+users = cursor.fetchall()
+print(users)
+
 success = 0
-    failed = 0
+failed = 0
 
-    for row in users:
-        uid = row[0]
-
+for row in users:
+    uid = row[0]
         try:
             if update.message.photo:
                 await context.bot.send_photo(
