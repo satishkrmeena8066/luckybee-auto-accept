@@ -94,8 +94,8 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     cursor.execute("SELECT user_id FROM users")
     users = cursor.fetchall()
-
-    success = 0
+print(users)  
+success = 0
     failed = 0
 
     for row in users:
