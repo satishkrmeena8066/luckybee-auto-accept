@@ -94,6 +94,7 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 cursor.execute("SELECT user_id FROM users")
 users = cursor.fetchall()
+
 print(users)
 
 success = 0
@@ -101,38 +102,40 @@ failed = 0
 
 for row in users:
     uid = row[0]
-        try:
-            if update.message.photo:
-                await context.bot.send_photo(
-                    uid,
-                    update.message.photo[-1].file_id,
-                    caption=update.message.caption or ""
-                )
 
-            elif update.message.video:
-                await context.bot.send_video(
-                    uid,
-                    update.message.video.file_id,
-                    caption=update.message.caption or ""
-                )
+    try:
+        if update.message.photo:
+            await context.bot.send_photo(
+                uid,
+                update.message.photo[-1].file_id,
+                caption=update.message.caption or ""
+            )
 
-            elif update.message.document:
-                await context.bot.send_document(
-                    uid,
-                    update.message.document.file_id,
-                    caption=update.message.caption or ""
-                )
+        elif update.message.video:
+            await context.bot.send_video(
+                uid,
+                update.message.video.file_id,
+                caption=update.message.caption or ""
+            )
 
-            else:
-                await context.bot.send_message(
-                    uid,
-                    update.message.text
-                )
+        elif update.message.document:
+            await context.bot.send_document(
+                uid,
+                update.message.document.file_id,
+                caption=update.message.caption or ""
+            )
 
-            success += 1
+        else:
+            await context.bot.send_message(
+                uid,
+                update.message.text
+            )
 
-        except:
-            failed += 1
+        success += 1
+
+    except Exception as e:
+        print(f"Failed to send to {uid}: {e}")
+        failed += 1
 
     await update.message.reply_text(
         f"""✅ Broadcast Complete
