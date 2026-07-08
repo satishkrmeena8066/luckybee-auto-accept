@@ -73,7 +73,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
             (chat.id, chat.title),
         )
 
-        try:
+         try:
             await context.bot.send_message(
                 chat_id=user.id,
                 text=f"""🎉 Welcome {user.first_name}!
