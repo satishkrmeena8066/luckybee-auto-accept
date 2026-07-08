@@ -44,12 +44,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         (user.id, user.first_name),
     )
 
-  await update.message.reply_text(
-    f"""👋 Welcome {user.first_name}!
-
-🎉 Welcome to LuckyBee Team.
-
-You'll receive all offers here."""
+await update.message.reply_text(
+    f"👋 Welcome {user.first_name}!\n\n🎉 Welcome to LuckyBee Team.\n\nYou'll receive all offers here."
 )
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
