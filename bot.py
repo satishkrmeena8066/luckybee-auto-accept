@@ -102,7 +102,7 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     for row in users:
         uid = row[0]
-
+print(f"Sending to {uid}")
         try:
             if update.message.photo:
                 await context.bot.send_photo(
@@ -134,9 +134,8 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             success += 1
 
         except Exception as e:
-            print(f"Failed to send to {uid}: {e}")
-            failed += 1
-
+    print(f"❌ Failed {uid}: {repr(e)}")
+    failed += 1
     await update.message.reply_text(
         f"""✅ Broadcast Complete
 
