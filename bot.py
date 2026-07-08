@@ -25,6 +25,12 @@ CREATE TABLE IF NOT EXISTS users (
     first_name TEXT
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS channels (
+    chat_id BIGINT PRIMARY KEY,
+    title TEXT
+)
+""")
 broadcast_mode = {}
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -40,7 +46,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         f"👋 Welcome {user.first_name}\n\n"
-        "🎉 Welcome to LuckyBee Team.\n\n"
+        "🎉 Welcome to LuckyBee Team.\n\n
         "You'll receive all offers here."
     )
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -57,7 +63,16 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """,
             (user.id, user.first_name),
         )
+chat = update.chat_join_request.chat
 
+cursor.execute(
+    """
+    INSERT INTO channels (chat_id, title)
+    VALUES (%s, %s)
+    ON CONFLICT (chat_id) DO NOTHING
+    """,
+    (chat.id, chat.title),
+)
         try:
             await context.bot.send_message(
                 chat_id=user.id,
