@@ -96,38 +96,48 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     users = cursor.fetchall()
 
     print(users)
+
     success = 0
     failed = 0
 
-   for row in users:
-    uid = row[0]
-    print(f"Sending to {uid}")
+    for row in users:
+        uid = row[0]
+        print(f"Sending to {uid}")
 
-    try:
-        if update.message.photo:
-            await context.bot.send_photo(
-                uid,
-                update.message.photo[-1].file_id,
-                caption=update.message.caption or ""
-            )
+        try:
+            if update.message.photo:
+                await context.bot.send_photo(
+                    uid,
+                    update.message.photo[-1].file_id,
+                    caption=update.message.caption or ""
+                )
 
-        elif update.message.video:
-            ...
+            elif update.message.video:
+                await context.bot.send_video(
+                    uid,
+                    update.message.video.file_id,
+                    caption=update.message.caption or ""
+                )
 
-        elif update.message.document:
-            ...
+            elif update.message.document:
+                await context.bot.send_document(
+                    uid,
+                    update.message.document.file_id,
+                    caption=update.message.caption or ""
+                )
 
-        else:
-            await context.bot.send_message(
-                uid,
-                update.message.text
-            )
+            else:
+                await context.bot.send_message(
+                    uid,
+                    update.message.text
+                )
 
-        success += 1
+            success += 1
 
-    except Exception as e:
-        print(f"❌ Failed {uid}: {repr(e)}")
-        failed += 1
+        except Exception as e:
+            print(f"❌ Failed {uid}: {repr(e)}")
+            failed += 1
+
     await update.message.reply_text(
         f"""✅ Broadcast Complete
 
