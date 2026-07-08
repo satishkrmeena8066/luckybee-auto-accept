@@ -30,7 +30,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
 
-   cursor.execute(
+cursor.execute(
     """
     INSERT INTO users (user_id, first_name)
     VALUES (%s, %s)
@@ -50,12 +50,14 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user = update.chat_join_request.from_user
 
-        cursor.execute(
-            "INSERT OR IGNORE INTO users(user_id, first_name) VALUES(?, ?)",
-            (user.id, user.first_name),
-        )
-        db.commit()
-
+cursor.execute(
+    """
+    INSERT INTO users (user_id, first_name)
+    VALUES (%s, %s)
+    ON CONFLICT (user_id) DO NOTHING
+    """,
+    (user.id, user.first_name),
+)
         try:
             await context.bot.send_message(
                 chat_id=user.id,
