@@ -48,7 +48,7 @@ await update.message.reply_text(
     f"👋 Welcome {user.first_name}!\n\n🎉 Welcome to LuckyBee Team.\n\nYou'll receive all offers here."
 )
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    try:
+       try:
         await update.chat_join_request.approve()
 
         user = update.chat_join_request.from_user
@@ -61,16 +61,18 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """,
             (user.id, user.first_name),
         )
-chat = update.chat_join_request.chat
 
-cursor.execute(
-    """
-    INSERT INTO channels (chat_id, title)
-    VALUES (%s, %s)
-    ON CONFLICT (chat_id) DO NOTHING
-    """,
-    (chat.id, chat.title),
-)
+        chat = update.chat_join_request.chat
+
+        cursor.execute(
+            """
+            INSERT INTO channels (chat_id, title)
+            VALUES (%s, %s)
+            ON CONFLICT (chat_id) DO NOTHING
+            """,
+            (chat.id, chat.title),
+        )
+
         try:
             await context.bot.send_message(
                 chat_id=user.id,
