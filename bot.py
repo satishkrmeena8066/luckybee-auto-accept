@@ -49,14 +49,15 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user = update.chat_join_request.from_user
 
-cursor.execute(
-    """
-    INSERT INTO users (user_id, first_name)
-    VALUES (%s, %s)
-    ON CONFLICT (user_id) DO NOTHING
-    """,
-    (user.id, user.first_name),
-)
+        cursor.execute(
+            """
+            INSERT INTO users (user_id, first_name)
+            VALUES (%s, %s)
+            ON CONFLICT (user_id) DO NOTHING
+            """,
+            (user.id, user.first_name),
+        )
+
         try:
             await context.bot.send_message(
                 chat_id=user.id,
