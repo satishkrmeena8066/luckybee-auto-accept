@@ -1,4 +1,5 @@
-import sqlite3
+import os
+import psycopg2
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -12,28 +13,31 @@ BOT_TOKEN = "8360228300:AAG43M1a7Hu2JqDz-i_Qffnum-V61h1AUfw"
 CHANNEL_ID = -1004485039141
 ADMIN_ID = 7324304740
 
-db = sqlite3.connect("users.db", check_same_thread=False)
+DATABASE_URL = os.environ["DATABASE_URL"]
+
+db = psycopg2.connect(DATABASE_URL)
+db.autocommit = True
 cursor = db.cursor()
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS users(
-    user_id INTEGER PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS users (
+    user_id BIGINT PRIMARY KEY,
     first_name TEXT
 )
 """)
-
-db.commit() 
 broadcast_mode = {}
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
 
-    cursor.execute(
-        "INSERT OR IGNORE INTO users(user_id,first_name) VALUES(?,?)",
-        (user.id, user.first_name),
-    )
-
-    db.commit()
+   cursor.execute(
+    """
+    INSERT INTO users (user_id, first_name)
+    VALUES (%s, %s)
+    ON CONFLICT (user_id) DO NOTHING
+    """,
+    (user.id, user.first_name),
+)
 
     await update.message.reply_text(
         f"👋 Welcome {user.first_name}\n\n"
