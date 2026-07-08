@@ -100,11 +100,13 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     success = 0
     failed = 0
 
-    for row in users:
-        uid = row[0]
-print(f"Sending to {uid}")
-        try:
-            if update.message.photo:
+ for row in users:
+    uid = row[0]
+    print(f"Sending to {uid}")
+
+    try:
+        if update.message.photo:
+            ...
                 await context.bot.send_photo(
                     uid,
                     update.message.photo[-1].file_id,
