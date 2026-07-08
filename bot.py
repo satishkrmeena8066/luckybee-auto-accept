@@ -1,5 +1,5 @@
 import os
-import psycopg2
+import psycopg
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -15,7 +15,7 @@ ADMIN_ID = 7324304740
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
-db = psycopg2.connect(DATABASE_URL)
+db = psycopg.connect(DATABASE_URL)
 db.autocommit = True
 cursor = db.cursor()
 
