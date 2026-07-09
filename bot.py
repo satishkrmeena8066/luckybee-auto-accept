@@ -286,7 +286,7 @@ app.add_handler(
 )
 
 app.add_handler(
-    MessageHandler(filters.REPLY & filters.TEXT, admin_reply),
+    MessageHandler(filters.REPLY, admin_reply),
     group=2
 )
 print("LuckyBee Bot Started...")
