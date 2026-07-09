@@ -286,7 +286,8 @@ async def welcome_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )    
 async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-
+    if welcome_mode.get(user_id):
+        return
     if user_id != ADMIN_ID:
         return
 
@@ -450,7 +451,7 @@ app.add_handler(
 )
 app.add_handler(
     MessageHandler(
-        filters.TEXT | filters.PHOTO | filters.VIDEO,
+        (filters.TEXT | filters.PHOTO | filters.VIDEO) & ~filters.COMMAND,
         welcome_handler,
     ),
     group=1,
