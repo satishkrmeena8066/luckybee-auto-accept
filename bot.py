@@ -185,54 +185,54 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     name = update.effective_user.first_name
 
- if msg.text:
-    admin_msg = await context.bot.send_message(
-        ADMIN_ID,
-        f"📩 Message from {name}\n\n{msg.text}"
-    )
+     if msg.text:
+        admin_msg = await context.bot.send_message(
+            ADMIN_ID,
+            f"📩 Message from {name}\n\n{msg.text}"
+        )
 
-elif msg.photo:
-    admin_msg = await context.bot.send_photo(
-        ADMIN_ID,
-        msg.photo[-1].file_id,
-        caption=f"📩 Message from {name}\n\n{caption}"
-    )
+    elif msg.photo:
+        admin_msg = await context.bot.send_photo(
+            ADMIN_ID,
+            msg.photo[-1].file_id,
+            caption=f"📩 Message from {name}\n\n{caption}"
+        )
 
-elif msg.video:
-    admin_msg = await context.bot.send_video(
-        ADMIN_ID,
-        msg.video.file_id,
-        caption=f"📩 Message from {name}\n\n{caption}"
-    )
+    elif msg.video:
+        admin_msg = await context.bot.send_video(
+            ADMIN_ID,
+            msg.video.file_id,
+            caption=f"📩 Message from {name}\n\n{caption}"
+        )
 
-elif msg.document:
-    admin_msg = await context.bot.send_document(
-        ADMIN_ID,
-        msg.document.file_id,
-        caption=f"📩 Message from {name}\n\n{caption}"
-    )
+    elif msg.document:
+        admin_msg = await context.bot.send_document(
+            ADMIN_ID,
+            msg.document.file_id,
+            caption=f"📩 Message from {name}\n\n{caption}"
+        )
 
-elif msg.voice:
-    admin_msg = await context.bot.send_voice(
-        ADMIN_ID,
-        msg.voice.file_id
-    )
+    elif msg.voice:
+        admin_msg = await context.bot.send_voice(
+            ADMIN_ID,
+            msg.voice.file_id
+        )
 
-elif msg.audio:
-    admin_msg = await context.bot.send_audio(
-        ADMIN_ID,
-        msg.audio.file_id,
-        caption=f"📩 Message from {name}\n\n{caption}"
-    )
+    elif msg.audio:
+        admin_msg = await context.bot.send_audio(
+            ADMIN_ID,
+            msg.audio.file_id,
+            caption=f"📩 Message from {name}\n\n{caption}"
+        )
 
-elif msg.sticker:
-    admin_msg = await context.bot.send_sticker(
-        ADMIN_ID,
-        msg.sticker.file_id
-    )
+    elif msg.sticker:
+        admin_msg = await context.bot.send_sticker(
+            ADMIN_ID,
+            msg.sticker.file_id
+        )
 
-else:
-    return
+    else:
+        return
 
     cursor.execute(
         """
