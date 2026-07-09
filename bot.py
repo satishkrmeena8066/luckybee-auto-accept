@@ -32,8 +32,19 @@ CREATE TABLE IF NOT EXISTS support_messages (
     user_id BIGINT
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS welcome_settings (
+    id INT PRIMARY KEY DEFAULT 1,
+    message_type TEXT,
+    file_id TEXT,
+    caption TEXT,
+    button_text TEXT,
+    button_url TEXT
+)
+""")
 broadcast_mode = {}
 support_mode = {}
+welcome_mode = {}
 async def save_channel(chat):
     cursor.execute(
         """
@@ -78,7 +89,37 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat = update.chat_join_request.chat
         await save_channel(chat)       
        
-        try: 
+            try:
+        cursor.execute(
+            "SELECT message_type, file_id, caption FROM welcome_settings WHERE id=1"
+        )
+
+        row = cursor.fetchone()
+
+        if row:
+            message_type, file_id, caption = row
+
+            if message_type == "photo":
+                await context.bot.send_photo(
+                    chat_id=user.id,
+                    photo=file_id,
+                    caption=caption
+                )
+
+            elif message_type == "video":
+                await context.bot.send_video(
+                    chat_id=user.id,
+                    video=file_id,
+                    caption=caption
+                )
+
+            else:
+                await context.bot.send_message(
+                    chat_id=user.id,
+                    text=caption
+                )
+
+        else:
             await context.bot.send_message(
                 chat_id=user.id,
                 text=f"""🎉 Welcome {user.first_name}!
@@ -89,8 +130,9 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 Stay connected for daily updates, offers and rewards."""
             )
-        except Exception as e:
-            print(f"DM Failed: {e}")
+
+    except Exception as e:
+        print(f"DM Failed: {e}")
 
         print(f"Approved: {user.id}")
 
@@ -170,7 +212,78 @@ async def users(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"{i}. {row[1]}\n"
         text += f"🆔 {row[0]}\n\n"
 
-    await update.message.reply_text(text)    
+    await update.message.reply_text(text)  
+async def setwelcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    welcome_mode[update.effective_user.id] = True
+
+    await update.message.reply_text(
+        "📤 Welcome message bhejo.\n\n"
+        "Text, Photo ya Video bhej sakte ho."
+    )  
+async def welcome_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    if not welcome_mode.get(update.effective_user.id):
+        return
+
+    welcome_mode[update.effective_user.id] = False
+
+    msg = update.message
+
+    message_type = "text"
+    file_id = None
+    caption = ""
+    button_text = ""
+    button_url = ""
+
+    if msg.text:
+        caption = msg.text
+
+    elif msg.photo:
+        message_type = "photo"
+        file_id = msg.photo[-1].file_id
+        caption = msg.caption or ""
+
+    elif msg.video:
+        message_type = "video"
+        file_id = msg.video.file_id
+        caption = msg.caption or ""
+
+    else:
+        await update.message.reply_text(
+            "❌ Sirf Text, Photo ya Video allowed hai."
+        )
+        return
+
+    cursor.execute(
+        """
+        DELETE FROM welcome_settings
+        """
+    )
+
+    cursor.execute(
+        """
+        INSERT INTO welcome_settings
+        (id, message_type, file_id, caption, button_text, button_url)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """,
+        (
+            1,
+            message_type,
+            file_id,
+            caption,
+            button_text,
+            button_url,
+        ),
+    )
+
+    await update.message.reply_text(
+        "✅ Welcome Message Saved Successfully!"
+    )    
 async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
@@ -330,11 +443,18 @@ app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(CommandHandler("stats", stats))
 app.add_handler(CommandHandler("channels", channels))
 app.add_handler(CommandHandler("users", users))
+app.add_handler(CommandHandler("setwelcome", setwelcome))
 app.add_handler(
     MessageHandler(filters.ALL, broadcast_handler),
     group=0
 )
-
+app.add_handler(
+    MessageHandler(
+        filters.TEXT | filters.PHOTO | filters.VIDEO,
+        welcome_handler,
+    ),
+    group=1,
+)
 app.add_handler(
     MessageHandler(
         (
