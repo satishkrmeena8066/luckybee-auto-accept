@@ -185,25 +185,18 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     name = update.effective_user.first_name
 
-    if msg.text:
+ if msg.text:
     admin_msg = await context.bot.send_message(
         ADMIN_ID,
         f"📩 Message from {name}\n\n{msg.text}"
-
     )
-       
+
 elif msg.photo:
-
     admin_msg = await context.bot.send_photo(
-
         ADMIN_ID,
-
         msg.photo[-1].file_id,
-
         caption=f"📩 Message from {name}\n\n{caption}"
-
     )
-
 
 elif msg.video:
     admin_msg = await context.bot.send_video(
