@@ -185,10 +185,10 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     name = update.effective_user.first_name
 
-         if msg.text:
-             admin_msg = await context.bot.send_message(
-                  ADMIN_ID,
-                  f"📩 Message from {name}\n\n{msg.text}"
+        if msg.text:
+            admin_msg = await context.bot.send_message(
+                ADMIN_ID,
+                f"📩 Message from {name}\n\n{msg.text}"
         )
 
     elif msg.photo:
