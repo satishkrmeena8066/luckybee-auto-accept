@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS support_messages (
 )
 """)
 broadcast_mode = {}
+support_mode = {}
 async def save_channel(chat):
     cursor.execute(
         """
@@ -171,12 +172,50 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 ❌ Failed: {failed}
 """
     )
+async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id == ADMIN_ID:
+        return
+
+    admin_msg = await context.bot.send_message(
+        ADMIN_ID,
+        f"📩 Message from {update.effective_user.first_name}\n\n{update.message.text}"
+    )
+
+    cursor.execute(
+        "INSERT INTO support_messages (admin_msg_id, user_id) VALUES (%s, %s)",
+        (admin_msg.message_id, update.effective_user.id),
+    )
+
+    await update.message.reply_text("✅ Your message has been sent to Admin.")
+
+
+async def admin_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    if not update.message.reply_to_message:
+        return
+
+    cursor.execute(
+        "SELECT user_id FROM support_messages WHERE admin_msg_id=%s",
+        (update.message.reply_to_message.message_id,),
+    )
+
+    row = cursor.fetchone()
+
+    if row:
+        await context.bot.send_message(
+            row[0],
+            f"📩 Admin Reply:\n\n{update.message.text}"
+        )    
 app = Application.builder().token(BOT_TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(ChatJoinRequestHandler(approve))
 app.add_handler(CommandHandler("broadcast", broadcast))
-app.add_handler(MessageHandler(filters.ALL, broadcast_handler))
+app.add_handler(MessageHandler(filters.ALL, broadcast_handler)) 
+app.add_handler(CommandHandler("support", support))
+app.add_handler(MessageHandler(filters.REPLY & filters.TEXT, admin_reply))
 print("LuckyBee Bot Started...")
 app.run_polling(
     allowed_updates=Update.ALL_TYPES
