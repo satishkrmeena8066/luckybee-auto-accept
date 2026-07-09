@@ -126,7 +126,27 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 💬 Support Messages : {total_support}
 """
     )
+async def channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
 
+    cursor.execute(
+        "SELECT chat_id, title FROM channels ORDER BY title"
+    )
+
+    rows = cursor.fetchall()
+
+    if not rows:
+        await update.message.reply_text("❌ No channels found.")
+        return
+
+    text = "📢 LuckyBee Channels\n\n"
+
+    for i, row in enumerate(rows, start=1):
+        text += f"{i}. {row[1]}\n"
+        text += f"🆔 {row[0]}\n\n"
+
+    await update.message.reply_text(text)
 async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
@@ -284,6 +304,7 @@ app.add_handler(CommandHandler("start", start))
 app.add_handler(ChatJoinRequestHandler(approve))
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(CommandHandler("stats", stats))
+app.add_handler(CommandHandler("channels", channels))
 app.add_handler(
     MessageHandler(filters.ALL, broadcast_handler),
     group=0
