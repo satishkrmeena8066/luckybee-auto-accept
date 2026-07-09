@@ -92,11 +92,11 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
            cursor.execute(
             "SELECT message_type, file_id, caption FROM welcome_settings WHERE id=1"
-        )
+           )
 
-        row = cursor.fetchone()
+            row = cursor.fetchone()
 
-        if row:
+            if row:
             message_type, file_id, caption = row
 
             if message_type == "photo":
@@ -119,7 +119,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     text=caption
                 )
 
-        else:
+            else:
             await context.bot.send_message(
                 chat_id=user.id,
                 text=f"""🎉 Welcome {user.first_name}!
