@@ -44,11 +44,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         (user.id, user.first_name),
     )
 
-await update.message.reply_text(
+    await update.message.reply_text(
     f"👋 Welcome {user.first_name}!\n\n🎉 Welcome to LuckyBee Team.\n\nYou'll receive all offers here."
 )
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
-       try:
+    try:
         await update.chat_join_request.approve()
 
         user = update.chat_join_request.from_user
@@ -73,7 +73,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
             (chat.id, chat.title),
         )
 
-           try:
+        try: 
             await context.bot.send_message(
                 chat_id=user.id,
                 text=f"""🎉 Welcome {user.first_name}!
