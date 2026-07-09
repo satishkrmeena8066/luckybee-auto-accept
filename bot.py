@@ -213,9 +213,21 @@ app = Application.builder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(ChatJoinRequestHandler(approve))
 app.add_handler(CommandHandler("broadcast", broadcast))
-app.add_handler(MessageHandler(filters.ALL, broadcast_handler)) 
-app.add_handler(CommandHandler("support", support))
-app.add_handler(MessageHandler(filters.REPLY & filters.TEXT, admin_reply))
+
+app.add_handler(
+    MessageHandler(filters.ALL, broadcast_handler),
+    group=0
+)
+
+app.add_handler(
+    MessageHandler(filters.TEXT & ~filters.COMMAND, support),
+    group=1
+)
+
+app.add_handler(
+    MessageHandler(filters.REPLY & filters.TEXT, admin_reply),
+    group=2
+)
 print("LuckyBee Bot Started...")
 app.run_polling(
     allowed_updates=Update.ALL_TYPES
