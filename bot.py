@@ -20,28 +20,27 @@ db.autocommit = True
 cursor = db.cursor()
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    user_id BIGINT PRIMARY KEY,
-    first_name TEXT
-)
-""")
-cursor.execute("""
 CREATE TABLE IF NOT EXISTS channels (
     chat_id BIGINT PRIMARY KEY,
     title TEXT
 )
 """)
-broadcast_mode = {}
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user = update.effective_user
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS support_messages (
+    admin_msg_id BIGINT PRIMARY KEY,
+    user_id BIGINT
+)
+""")
+broadcast_mode = {}
+async def save_channel(chat):
     cursor.execute(
         """
-        INSERT INTO users (user_id, first_name)
+        INSERT INTO channels (chat_id, title)
         VALUES (%s, %s)
-        ON CONFLICT (user_id) DO NOTHING
+        ON CONFLICT (chat_id) DO NOTHING
         """,
-        (user.id, user.first_name),
+        (chat.id, chat.title),
     )
 
     await update.message.reply_text(
@@ -63,16 +62,8 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         chat = update.chat_join_request.chat
-
-        cursor.execute(
-            """
-            INSERT INTO channels (chat_id, title)
-            VALUES (%s, %s)
-            ON CONFLICT (chat_id) DO NOTHING
-            """,
-            (chat.id, chat.title),
-        )
-
+        await save_channel(chat)       
+       
         try: 
             await context.bot.send_message(
                 chat_id=user.id,
