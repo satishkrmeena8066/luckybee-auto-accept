@@ -186,7 +186,6 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
         (admin_msg.message_id, update.effective_user.id),
     )
 
-    await update.message.reply_text("✅ Your message has been sent to Admin.")
 
 
 async def admin_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -204,10 +203,10 @@ async def admin_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     row = cursor.fetchone()
 
     if row:
-        await context.bot.send_message(
-            row[0],
-            f"📩 Admin Reply:\n\n{update.message.text}"
-        )    
+await context.bot.send_message(
+    chat_id=row[0],
+    text=update.message.text
+)  
 app = Application.builder().token(BOT_TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
