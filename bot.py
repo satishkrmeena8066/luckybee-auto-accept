@@ -319,8 +319,19 @@ app.add_handler(
 )
 
 app.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, support),
-    group=1
+    MessageHandler(
+        (
+            filters.TEXT
+            | filters.PHOTO
+            | filters.VIDEO
+            | filters.Document.ALL
+            | filters.VOICE
+            | filters.AUDIO
+            | filters.Sticker.ALL
+        ) & ~filters.COMMAND,
+        support,
+    ),
+    group=1,
 )
 
 app.add_handler(
