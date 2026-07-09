@@ -202,11 +202,11 @@ async def admin_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     row = cursor.fetchone()
 
-    if row:
-await context.bot.send_message(
-    chat_id=row[0],
-    text=update.message.text
-)  
+if row:
+    await context.bot.send_message(
+        chat_id=row[0],
+        text=update.message.text
+    )
 app = Application.builder().token(BOT_TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
