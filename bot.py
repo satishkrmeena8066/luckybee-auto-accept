@@ -89,50 +89,50 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat = update.chat_join_request.chat
         await save_channel(chat)       
        
-        try:
-           cursor.execute(
-            "SELECT message_type, file_id, caption FROM welcome_settings WHERE id=1"
-           )
+    try:
+            cursor.execute(
+                "SELECT message_type, file_id, caption FROM welcome_settings WHERE id=1"
+            )
 
             row = cursor.fetchone()
 
             if row:
-            message_type, file_id, caption = row
+                message_type, file_id, caption = row
 
-            if message_type == "photo":
-                await context.bot.send_photo(
-                    chat_id=user.id,
-                    photo=file_id,
-                    caption=caption
-                )
+                if message_type == "photo":
+                    await context.bot.send_photo(
+                        chat_id=user.id,
+                        photo=file_id,
+                        caption=caption
+                    )
 
-            elif message_type == "video":
-                await context.bot.send_video(
-                    chat_id=user.id,
-                    video=file_id,
-                    caption=caption
-                )
+                elif message_type == "video":
+                    await context.bot.send_video(
+                        chat_id=user.id,
+                        video=file_id,
+                        caption=caption
+                    )
+
+                else:
+                    await context.bot.send_message(
+                        chat_id=user.id,
+                        text=caption
+                    )
 
             else:
                 await context.bot.send_message(
                     chat_id=user.id,
-                    text=caption
-                )
-
-            else:
-            await context.bot.send_message(
-                chat_id=user.id,
-                text=f"""🎉 Welcome {user.first_name}!
+                    text=f"""🎉 Welcome {user.first_name}!
 
 ✅ Your request has been approved.
 
 💚 Welcome to LuckyBee Team.
 
 Stay connected for daily updates, offers and rewards."""
-            )
+                )
 
-    except Exception as e:
-        print(f"DM Failed: {e}")
+        except Exception as e:
+            print(f"DM Failed: {e}")
 
         print(f"Approved: {user.id}")
 
