@@ -110,6 +110,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id=user.id,
     photo=file_id,
     caption=caption,
+    parse_mode="HTML",                    
     reply_markup=InlineKeyboardMarkup(
         [
             [
@@ -127,6 +128,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id=user.id,
     video=file_id,
     caption=caption,
+    parse_mode="HTML",                    
     reply_markup=InlineKeyboardMarkup(
         [
             [
@@ -143,6 +145,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     await context.bot.send_message(
     chat_id=user.id,
     text=caption,
+    parse_mode="HTML",                    
     reply_markup=InlineKeyboardMarkup(
         [
             [
