@@ -105,7 +105,27 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📢 Broadcast message bhejo.\n\n"
         "Text, Photo, Video ya Document kuch bhi bhej sakte ho."
     )
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
 
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total_users = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM channels")
+    total_channels = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM support_messages")
+    total_support = cursor.fetchone()[0]
+
+    await update.message.reply_text(
+        f"""📊 LuckyBee Bot Stats
+
+👥 Total Users : {total_users}
+📢 Total Channels : {total_channels}
+💬 Support Messages : {total_support}
+"""
+    )
 
 async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -263,7 +283,7 @@ app = Application.builder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(ChatJoinRequestHandler(approve))
 app.add_handler(CommandHandler("broadcast", broadcast))
-
+app.add_handler(CommandHandler("stats", stats))
 app.add_handler(
     MessageHandler(filters.ALL, broadcast_handler),
     group=0
