@@ -43,9 +43,22 @@ async def save_channel(chat):
         (chat.id, chat.title),
     )
 
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    cursor.execute(
+        """
+        INSERT INTO users (user_id, first_name)
+        VALUES (%s, %s)
+        ON CONFLICT (user_id) DO NOTHING
+        """,
+        (user.id, user.first_name),
+    )
+
     await update.message.reply_text(
-    f"👋 Welcome {user.first_name}!\n\n🎉 Welcome to LuckyBee Team.\n\nYou'll receive all offers here."
-)
+        f"👋 Welcome {user.first_name}!\n\n🎉 Welcome to LuckyBee Team.\n\nYou'll receive all offers here."
+    )
 async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await update.chat_join_request.approve()
