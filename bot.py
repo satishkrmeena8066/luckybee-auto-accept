@@ -1,6 +1,10 @@
 import os
 import psycopg
-from telegram import Update
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from telegram.ext import (
     Application,
     ChatJoinRequestHandler,
@@ -45,6 +49,8 @@ CREATE TABLE IF NOT EXISTS welcome_settings (
 broadcast_mode = {}
 support_mode = {}
 welcome_mode = {}
+welcome_data = {}
+welcome_step = {}
 async def save_channel(chat):
     cursor.execute(
         """
@@ -91,34 +97,63 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
        
         try:
             cursor.execute(
-                "SELECT message_type, file_id, caption FROM welcome_settings WHERE id=1"
-            )
+    "SELECT message_type, file_id, caption, button_text, button_url FROM welcome_settings WHERE id=1"
+        )
 
             row = cursor.fetchone()
 
             if row:
-                message_type, file_id, caption = row
+                message_type, file_id, caption, button_text, button_url = row
 
                 if message_type == "photo":
                     await context.bot.send_photo(
-                        chat_id=user.id,
-                        photo=file_id,
-                        caption=caption
-                    )
+    chat_id=user.id,
+    photo=file_id,
+    caption=caption,
+    reply_markup=InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    button_text,
+                    url=button_url
+                )
+            ]
+        ]
+    ),
+)
 
                 elif message_type == "video":
                     await context.bot.send_video(
-                        chat_id=user.id,
-                        video=file_id,
-                        caption=caption
-                    )
+    chat_id=user.id,
+    video=file_id,
+    caption=caption,
+    reply_markup=InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    button_text,
+                    url=button_url
+                )
+            ]
+        ]
+    ),
+)
 
                 else:
                     await context.bot.send_message(
-                        chat_id=user.id,
-                        text=caption
-                    )
-
+    chat_id=user.id,
+    text=caption,
+    reply_markup=InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    button_text,
+                    url=button_url
+                )
+            ]
+        ]
+    ),
+)
             else:
                 await context.bot.send_message(
                     chat_id=user.id,
@@ -237,8 +272,8 @@ async def welcome_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = "text"
     file_id = None
     caption = ""
-    button_text = ""
-    button_url = ""
+    button_text = "Join Telegram"
+    button_url = "https://t.me/+MLXlQRWHMawwNWU1"
 
     if msg.text:
         caption = msg.text
