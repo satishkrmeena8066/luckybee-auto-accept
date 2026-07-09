@@ -90,7 +90,7 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_channel(chat)       
        
         try:
-        cursor.execute(
+           cursor.execute(
             "SELECT message_type, file_id, caption FROM welcome_settings WHERE id=1"
         )
 
