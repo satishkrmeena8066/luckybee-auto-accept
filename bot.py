@@ -186,18 +186,24 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = update.effective_user.first_name
 
     if msg.text:
-        ...
     admin_msg = await context.bot.send_message(
         ADMIN_ID,
         f"📩 Message from {name}\n\n{msg.text}"
+
+    )
+       
+elif msg.photo:
+
+    admin_msg = await context.bot.send_photo(
+
+        ADMIN_ID,
+
+        msg.photo[-1].file_id,
+
+        caption=f"📩 Message from {name}\n\n{caption}"
+
     )
 
-elif msg.photo:
-    admin_msg = await context.bot.send_photo(
-        ADMIN_ID,
-        msg.photo[-1].file_id,
-        caption=f"📩 Message from {name}\n\n{caption}"
-    )
 
 elif msg.video:
     admin_msg = await context.bot.send_video(
@@ -219,11 +225,6 @@ elif msg.voice:
         msg.voice.file_id
     )
 
-    await context.bot.send_message(
-        ADMIN_ID,
-        f"👤 {name}"
-    )
-
 elif msg.audio:
     admin_msg = await context.bot.send_audio(
         ADMIN_ID,
@@ -235,11 +236,6 @@ elif msg.sticker:
     admin_msg = await context.bot.send_sticker(
         ADMIN_ID,
         msg.sticker.file_id
-    )
-
-    await context.bot.send_message(
-        ADMIN_ID,
-        f"👤 {name}"
     )
 
 else:
