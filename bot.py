@@ -176,18 +176,78 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id == ADMIN_ID:
         return
 
-    admin_msg = await context.bot.send_message(
-        ADMIN_ID,
-        f"📩 Message from {update.effective_user.first_name}\n\n{update.message.text}"
-    )
+    msg = update.message
+
+    if not msg:
+        return
+
+    caption = msg.caption or ""
+
+    # TEXT
+    if msg.text:
+        admin_msg = await context.bot.send_message(
+            chat_id=ADMIN_ID,
+            text=msg.text,
+        )
+
+    # PHOTO
+    elif msg.photo:
+        admin_msg = await context.bot.send_photo(
+            chat_id=ADMIN_ID,
+            photo=msg.photo[-1].file_id,
+            caption=caption,
+        )
+
+    # VIDEO
+    elif msg.video:
+        admin_msg = await context.bot.send_video(
+            chat_id=ADMIN_ID,
+            video=msg.video.file_id,
+            caption=caption,
+        )
+
+    # DOCUMENT
+    elif msg.document:
+        admin_msg = await context.bot.send_document(
+            chat_id=ADMIN_ID,
+            document=msg.document.file_id,
+            caption=caption,
+        )
+
+    # VOICE
+    elif msg.voice:
+        admin_msg = await context.bot.send_voice(
+            chat_id=ADMIN_ID,
+            voice=msg.voice.file_id,
+            caption=caption,
+        )
+
+    # AUDIO
+    elif msg.audio:
+        admin_msg = await context.bot.send_audio(
+            chat_id=ADMIN_ID,
+            audio=msg.audio.file_id,
+            caption=caption,
+        )
+
+    # STICKER
+    elif msg.sticker:
+        admin_msg = await context.bot.send_sticker(
+            chat_id=ADMIN_ID,
+            sticker=msg.sticker.file_id,
+        )
+
+    else:
+        return
 
     cursor.execute(
-        "INSERT INTO support_messages (admin_msg_id, user_id) VALUES (%s, %s)",
+        """
+        INSERT INTO support_messages (admin_msg_id, user_id)
+        VALUES (%s, %s)
+        ON CONFLICT (admin_msg_id) DO NOTHING
+        """,
         (admin_msg.message_id, update.effective_user.id),
     )
-
-
-
 async def admin_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         return
@@ -202,10 +262,56 @@ async def admin_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     row = cursor.fetchone()
 
-    if row:
+    if not row:
+        return
+
+    uid = row[0]
+    msg = update.message
+
+    if msg.text:
         await context.bot.send_message(
-            chat_id=row[0],
-            text=update.message.text
+            chat_id=uid,
+            text=msg.text
+        )
+
+    elif msg.photo:
+        await context.bot.send_photo(
+            chat_id=uid,
+            photo=msg.photo[-1].file_id,
+            caption=msg.caption or ""
+        )
+
+    elif msg.video:
+        await context.bot.send_video(
+            chat_id=uid,
+            video=msg.video.file_id,
+            caption=msg.caption or ""
+        )
+
+    elif msg.document:
+        await context.bot.send_document(
+            chat_id=uid,
+            document=msg.document.file_id,
+            caption=msg.caption or ""
+        )
+
+    elif msg.voice:
+        await context.bot.send_voice(
+            chat_id=uid,
+            voice=msg.voice.file_id
+        )
+
+    elif msg.audio:
+        await context.bot.send_audio(
+            chat_id=uid,
+            audio=msg.audio.file_id,
+            caption=msg.caption or ""
+        )
+
+    elif msg.sticker:
+        await context.bot.send_sticker(
+            chat_id=uid,
+            sticker=msg.sticker.file_id
         )
 app = Application.builder().token(BOT_TOKEN).build()
 
