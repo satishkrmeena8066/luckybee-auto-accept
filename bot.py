@@ -147,6 +147,30 @@ async def channels(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text += f"🆔 {row[0]}\n\n"
 
     await update.message.reply_text(text)
+async def users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    cursor.execute(
+        "SELECT user_id, first_name FROM users ORDER BY user_id DESC LIMIT 50"
+    )
+
+    rows = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total = cursor.fetchone()[0]
+
+    if not rows:
+        await update.message.reply_text("❌ No users found.")
+        return
+
+    text = f"👥 Total Users: {total}\n\n"
+
+    for i, row in enumerate(rows, start=1):
+        text += f"{i}. {row[1]}\n"
+        text += f"🆔 {row[0]}\n\n"
+
+    await update.message.reply_text(text)    
 async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
@@ -305,6 +329,7 @@ app.add_handler(ChatJoinRequestHandler(approve))
 app.add_handler(CommandHandler("broadcast", broadcast))
 app.add_handler(CommandHandler("stats", stats))
 app.add_handler(CommandHandler("channels", channels))
+app.add_handler(CommandHandler("users", users))
 app.add_handler(
     MessageHandler(filters.ALL, broadcast_handler),
     group=0
