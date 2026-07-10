@@ -337,15 +337,14 @@ async def broadcast_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cursor.execute("SELECT user_id FROM users")
     users = cursor.fetchall()
 
-    print(users)
+   
 
     success = 0
     failed = 0
 
     for row in users:
         uid = row[0]
-        print(f"Sending to {uid}")
-
+        
         try:
             if update.message.photo:
                 await context.bot.send_photo(
@@ -507,12 +506,12 @@ app.add_handler(
         ) & ~filters.COMMAND,
         support,
     ),
-    group=1,
+    group=2,
 )
 
 app.add_handler(
     MessageHandler(filters.REPLY, admin_reply),
-    group=2
+    group=3
 )
 print("LuckyBee Bot Started...")
 app.run_polling(
